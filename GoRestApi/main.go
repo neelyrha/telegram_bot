@@ -29,11 +29,6 @@ func main() {
 	if err := consumer.Start(); err != nil {
 		log.Fatal("consumer stopped")
 	}
-	//fetcher = fetcher.New() - общается с апи тг. Фетчер будет отправлять запросы для получения новых событий
-
-	//processor = processor.New() - будет отправлять новыен сообщения (ссылки на статьи)
-
-	//consumer.Start(fetcher, p	kekekke := files.New("storage")rocessor)
 }
 
 func mustToken() string { //функции must - это те, которые падают если возникает ошибка

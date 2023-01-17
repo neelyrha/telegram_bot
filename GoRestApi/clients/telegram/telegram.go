@@ -10,11 +10,9 @@ import (
 	"strconv"
 )
 
-//получение апдейтов, новых сообщений, отправка сообщений пользователям
-
 type Client struct {
-	host     string //host api-сервиса телеграма
-	basePath string //префикс с которого начинаются все запросы, например //tg-bot.com/bot<token>
+	host     string
+	basePath string
 	client   http.Client
 }
 
@@ -57,8 +55,8 @@ func (c *Client) Updates(offset int, limit int) ([]Update, error) {
 	return res.Result, nil
 }
 
-func (c *Client) SendMessage(chatID int, text string) error { //неэкспортируемые методы лучше помещать ниже экспортируемых
-	q := url.Values{} //пересмотреть
+func (c *Client) SendMessage(chatID int, text string) error {
+	q := url.Values{}
 	q.Add("chat_id", strconv.Itoa(chatID))
 	q.Add("text", text)
 
@@ -75,8 +73,7 @@ func (c *Client) doRequest(method string, query url.Values) (data []byte, err er
 	u := url.URL{
 		Scheme: "http",
 		Host:   c.host,
-		Path:   path.Join(c.basePath, method), //мы используем метод Join
-		//чтобы решить проблему с повторяющимся '/'
+		Path:   path.Join(c.basePath, method),
 	}
 
 	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
@@ -86,8 +83,7 @@ func (c *Client) doRequest(method string, query url.Values) (data []byte, err er
 		return nil, err
 	}
 
-	req.URL.RawQuery = query.Encode() //приведение запроса к тому виду,
-	// чтобы его можно было отправлять на сервер
+	req.URL.RawQuery = query.Encode()
 	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, err

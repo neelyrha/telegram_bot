@@ -1,12 +1,12 @@
 package telegram
 
-type UpdatesResponce struct { //то что мы получаем в ответе
+type UpdatesResponce struct {
 	Ok     bool     `json:"ok"`
 	Result []Update `json:"result"`
 }
 
-type Update struct { //то что мы отправляем в запросе. Это понятие только телеграмма
-	ID      int              `json:"update_id"` //update id - из документации телеграм бота
+type Update struct {
+	ID      int              `json:"update_id"`
 	Message *IncomingMessage `json:"message"`
 }
 

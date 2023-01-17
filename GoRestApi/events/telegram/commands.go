@@ -20,11 +20,6 @@ func (p *Processor) doCmd(text string, chatID int, username string) error {
 
 	log.Printf("got new command '%s' from '%s'", text, username)
 
-	// add page: http://...
-	// rnd page: /rnd
-	// help: /help
-	//start: /start: начинается при добавлении бота. в ответ мы присылаем hi + help
-
 	if isAddCmd(text) {
 		return p.savePage(chatID, text, username)
 	}
@@ -39,13 +34,10 @@ func (p *Processor) doCmd(text string, chatID int, username string) error {
 	default:
 		return p.tg.SendMessage(chatID, msgUnknownCommand)
 	}
-
-	return nil
 }
 
 func (p *Processor) savePage(chatID int, pageUrl string, username string) (err error) { //именованные ошибки нужны
-	//потому будет несколько мест с их возвратом
-	defer func() { err = e.WrapIfErr("can't do command: save page", err) }() //значение err попадет туда перед ретёрном
+	defer func() { err = e.WrapIfErr("can't do command: save page", err) }()
 
 	page := &storage.Page{
 		URL:      pageUrl,
@@ -65,7 +57,7 @@ func (p *Processor) savePage(chatID int, pageUrl string, username string) (err e
 		return err
 	}
 
-	if err := p.tg.SendMessage(chatID, msgSaved); err != nil { //здесь можно сделать замыкание
+	if err := p.tg.SendMessage(chatID, msgSaved); err != nil {
 		return err
 	}
 	return nil
@@ -98,13 +90,11 @@ func (p *Processor) sendHello(chatID int) error {
 	return p.tg.SendMessage(chatID, msgHello)
 }
 
-func isAddCmd(text string) bool { //оставляем название Add на тот случай если
-	// в будущем мы расширим функционал
+func isAddCmd(text string) bool {
 	return isURL(text)
 }
 
-func isURL(text string) bool { //этот метод будет работать только для ссылок с протоколом,
-	// без него (ya.ru) работать не будет
+func isURL(text string) bool { //этот метод будет работать только для ссылок с протоколом
 	u, err := url.Parse(text)
 	return err == nil && u.Host != ""
 }

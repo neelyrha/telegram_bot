@@ -23,13 +23,13 @@ func New(fetcher events.Fetcher, processor events.Processor, batchSize int) Cons
 func (c Consumer) Start() error {
 	for {
 		gotEvents, err := c.fetcher.Fetch(c.batchSize)
-		if err != nil { //эта ошибка возникает при проблемах с сетью - в данной итерации фетчер не смог получить ивенты
+		if err != nil {
 			log.Printf("[ERR] consumer: %s", err.Error())
 
 			continue
 		}
 
-		if len(gotEvents) == 0 { //можно сделать эскпоненциальный рост времени при неудаче
+		if len(gotEvents) == 0 {
 			time.Sleep(1 * time.Second)
 
 			continue
@@ -50,8 +50,7 @@ func (c *Consumer) handleEvents(events []events.Event) error {
 		if err := c.processor.Process(event); err != nil {
 			log.Printf("can't handle event: %s", err.Error())
 
-			continue // здесь нужно решение, что делать, если событие не обработалось. сейчас оно пропускается
-			// и теряется навсегда. лучше сделать параллельную обработку
+			continue
 		}
 	}
 	return nil

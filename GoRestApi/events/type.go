@@ -15,8 +15,8 @@ const (
 	Message
 )
 
-type Event struct { //более общая сущность чем Update, работает и с другими мессенджерами
+type Event struct {
 	Type Type
 	Text string
-	Meta interface{} //нужен для полей chatID и username которые могут отсутствовать в других мессенджерах
+	Meta interface{}
 }

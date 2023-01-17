@@ -14,16 +14,17 @@ type Processor struct {
 	storage storage.Storage
 }
 
-type Meta struct { //прописываем его в этом файле, тк это имеет отношение только к телеграмму
+type Meta struct {
 	ChatID   int
 	Username string
 }
 
 var (
 	ErrUnknownEvent    = errors.New("unknown event type")
-	ErrNoUpdates       = errors.New("no updates")
 	ErrUnknownMetaType = errors.New("unknown meta type")
 )
+
+//ErrNoUpdates = errors.New("no updates")
 
 func New(client *telegram.Client, storage storage.Storage) *Processor {
 	return &Processor{
@@ -38,19 +39,17 @@ func (p *Processor) Fetch(limit int) ([]events.Event, error) {
 		return nil, e.Wrap("can't get events", err)
 	}
 
-	if len(updates) == 0 { //если список апдейтов пуст то сразу заканчиваем работу функции
-		return nil, e.Wrap("no updates", ErrNoUpdates)
+	if len(updates) == 0 {
+		return nil, nil //e.Wrap("no updates", ErrNoUpdates)
 	}
 
-	res := make([]events.Event, 0, len(updates)) //готовим переменную для результата,
-	// заранее алоцируя память под нее
+	res := make([]events.Event, 0, len(updates))
 
-	for _, u := range updates { //перебираем все апдейты и преобразуем их в тип ивент
+	for _, u := range updates {
 		res = append(res, event(u))
 	}
 
-	p.offset = updates[len(updates)-1].ID + 1 //обновляем параметр офсет чтобы в следующий раз
-	// получить следующую пачку изменений
+	p.offset = updates[len(updates)-1].ID + 1
 
 	return res, nil
 }

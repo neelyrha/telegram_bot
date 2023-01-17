@@ -23,28 +23,30 @@ func New(basePath string) Storage {
 }
 
 func (s Storage) Save(page *storage.Page) (err error) {
-	defer func() { err = e.WrapIfErr("can't save page", err) }() //способ обработки ошибок
+	defer func() { err = e.WrapIfErr("can't save page", err) }()
 
-	fPath := filepath.Join(s.basePath, page.UserName) //путь в который будет сохраняться файл
+	fPath := filepath.Join(s.basePath, page.UserName)
 
-	if err := os.Mkdir(fPath, defaultPerm); err != nil {
-		return err
-	} //создаем нужные директории в этом пути
+	if _, err := os.Stat(fPath); os.IsNotExist(err) {
+		if err := os.Mkdir(fPath, defaultPerm); err != nil {
+			return err
+		}
+	}
 
-	fName, err := fileName(page) //формируем имя файла
+	fName, err := fileName(page)
 	if err != nil {
 		return err
 	}
 
-	fPath = filepath.Join(fPath, fName) //дописываем имя файла к пути
+	fPath = filepath.Join(fPath, fName)
 
-	file, err := os.Create(fPath) //создаем файл
+	file, err := os.Create(fPath)
 	if err != nil {
 		return err
 	}
-	defer func() { _ = file.Close() }() //для того что бы обработать ошибку которую мы не хотим обрабатывать
+	defer func() { _ = file.Close() }()
 
-	if err := gob.NewEncoder(file).Encode(page); err != nil { //записываем в файл страничку в нужном формате
+	if err := gob.NewEncoder(file).Encode(page); err != nil {
 		return err
 	}
 	return nil
@@ -80,8 +82,8 @@ func (s Storage) PickRandom(userName string) (page *storage.Page, err error) {
 	if len(files) == 0 {
 		return nil, storage.ErrNoSavedPages
 	}
-	rand.Seed(time.Now().UnixNano()) //генерируем случайное число засчет сида-времени. что так
-	n := rand.Intn(len(files))       //файл это и есть сохраненная страничка
+	rand.Seed(time.Now().UnixNano())
+	n := rand.Intn(len(files))
 
 	file := files[n]
 

@@ -17,13 +17,13 @@ type Storage interface {
 
 var ErrNoSavedPages = errors.New("no saved page")
 
-type Page struct { //страница по ссылке которую выбрал бот
+type Page struct {
 	URL      string
 	UserName string
 	//Created  time.Time
 }
 
-func (p Page) Hash() (string, error) { //для сохранения ссылок под уникальными именами
+func (p Page) Hash() (string, error) {
 	h := sha1.New()
 
 	if _, err := io.WriteString(h, p.URL); err != nil {
